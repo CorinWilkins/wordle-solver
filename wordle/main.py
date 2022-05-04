@@ -35,5 +35,5 @@ def find():
             guesses.append(match)
             matches = get_matches_for_guesses(word_list, guesses)
             
-            click.echo(matches.join('\n'))
+            click.echo('\n'.join(matches))
             click.echo(f'{len(matches)} possibilities')
