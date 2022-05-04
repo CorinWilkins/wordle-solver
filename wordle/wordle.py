@@ -19,25 +19,32 @@ def check_wordle(word, target_word):
     return ''.join(map(str, out))
 
 
-def get_matches(words, word, match):
-    return [guess for guess in words if(does_guess_match_word(guess, word, match))]
+def get_matches_for_guesses(words, guesses):
+    guesses = iter(guesses)
+    for guess in guesses:
+        match = next(guesses)
+        words = [word for word in words if(does_guess_match_word(word, guess, match))]
+    return words
 
-def does_guess_match_word(guess, word, match):
-    count = collections.Counter(guess)
+def get_matches_for_guess(words, guess, match):
+    return [word for word in words if(does_guess_match_word(word, guess, match))]
+
+def does_guess_match_word(word, guess, match):
+    count = collections.Counter(word)
     for position, char in enumerate(match):
         if char == '2':
-            if guess[position] != word[position]:
+            if word[position] != guess[position]:
                 return False
-            count[word[position]] -= 1
+            count[guess[position]] -= 1
             continue
           
         elif char == '1':
-            if guess[position] == word[position] or (guess[position] != word[position] and count[word[position]] is 0):
+            if word[position] == guess[position] or (word[position] != guess[position] and count[guess[position]] is 0):
                 return False
 
-            count[word[position]] -= 1
+            count[guess[position]] -= 1
             continue
             
-        if char == '0' and count[word[position]] > 0:
+        if char == '0' and count[guess[position]] > 0:
             return False
     return True
