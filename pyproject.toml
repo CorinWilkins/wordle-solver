@@ -19,4 +19,5 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
+generate = "wordle.main:generate_all_matches"
 main = "wordle.main:find"

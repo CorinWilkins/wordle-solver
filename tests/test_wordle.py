@@ -1,5 +1,5 @@
 from unittest import TestCase
-from wordle.wordle import check_wordle, get_matches_for_guess, get_matches_for_guesses
+from wordle.wordle import check_wordle, get_matches_for_guess, get_matches_for_guesses, get_next_best_word
 
 
 class CheckWordle(TestCase):
@@ -45,3 +45,22 @@ class GetMatchesForGuesses(TestCase):
     def test_exact_match(self):
         result = get_matches_for_guesses(["axxxx", "ayyyy", "xxxxx", "yyyyy", "zzzzz"], ["about", "20000", "agony", "20002"])
         self.assertEqual(result, ["ayyyy"])
+
+
+# class GetBestNextWord(TestCase):
+#     def test_best_guess(self):
+#         ('abler', 2.0),
+#         ('cover', 1.6666666666666667),
+#         ('feuar', 2.0),
+#         ('homer', 1.6666666666666667),
+#         ('lurer', 0.16666666666666666),
+#         ('rebid', 3.0),
+#         ('yoker', 1.6666666666666667)
+       
+#         get_next_best_word()
+#         # have some guesses
+#         # try each possible word against all others, save possible word and avg number of remaining words
+#         # return the word with lowest avg
+
+#         # result = get_matches_for_guesses(["axxxx", "ayyyy", "xxxxx", "yyyyy", "zzzzz"])
+#         self.assertEqual(True, ["ayyyy"])

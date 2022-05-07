@@ -1,14 +1,13 @@
 import re
+from webbrowser import get
 import click
-from wordle.wordle import get_matches_for_guesses
-import requests
+from wordle.wordle import build_word_matches, get_matches_for_guesses, get_next_best_word_log_memoed, load_word_matches, get_all_possible_words
 
-target_url = 'https://raw.githubusercontent.com/tabatkins/wordle-list/main/words'
-word_list = requests.get(target_url).text.split("\n")
-word_list.sort()
+
 
 @click.command()
 def find():
+    memoed_matches = load_word_matches()
     guesses = []
     while True:
         length = len(guesses)
@@ -33,7 +32,18 @@ def find():
 
 
             guesses.append(match)
-            matches = get_matches_for_guesses(word_list, guesses)
+            matches = get_matches_for_guesses(get_all_possible_words(), guesses)
             
-            click.echo('\n'.join(matches))
-            click.echo(f'{len(matches)} possibilities')
+            num_possibilities = len(matches)
+            click.echo(f'{num_possibilities} possibilities')
+            if num_possibilities < 1:
+                return
+
+            
+            next_best_words = get_next_best_word_log_memoed(matches, memoed_matches)
+            click.echo(f'next 10 best words {next_best_words}')
+
+
+@click.command()
+def generate_all_matches():
+    build_word_matches()
