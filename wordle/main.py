@@ -1,13 +1,13 @@
 import re
 from webbrowser import get
 import click
-from wordle.wordle import build_word_matches, get_matches_for_guesses, get_next_best_word_log_memoed, load_word_matches, get_all_possible_words
+from wordle.wordle import build_word_matches_naive, build_word_matches_processes, build_word_matches_threads, get_matches_for_guesses, get_next_best_word_log_memoed, get_all_possible_words
 
 
 
 @click.command()
 def find():
-    memoed_matches = load_word_matches()
+    memoed_matches = build_word_matches_processes()
     guesses = []
     while True:
         length = len(guesses)
@@ -46,4 +46,9 @@ def find():
 
 @click.command()
 def generate_all_matches():
-    build_word_matches()
+    build_word_matches_naive()
+    build_word_matches_threads()
+    build_word_matches_processes(2)
+    build_word_matches_processes(4)
+    build_word_matches_processes(8)
+    build_word_matches_processes(16)
