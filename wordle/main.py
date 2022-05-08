@@ -1,3 +1,4 @@
+import math
 import click
 import re
 from wordle.wordle import build_word_matches_naive, get_matches_for_guesses, get_next_best_word_log_memoed, get_all_possible_words
@@ -36,7 +37,6 @@ def find():
             click.echo(f'{num_possibilities} possibilities')
             if num_possibilities < 1:
                 return
-
-            
-            next_best_words = get_next_best_word_log_memoed(matches, memoed_matches)
-            click.echo(f'next 10 best words {next_best_words}')
+            limit = 10
+            next_best_words = get_next_best_word_log_memoed(matches, memoed_matches, limit)
+            click.echo(f'next {min(len(next_best_words), limit)} best words {next_best_words}')

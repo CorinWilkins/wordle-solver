@@ -2,6 +2,8 @@ import collections
 from itertools import combinations
 import requests
 import time
+from tqdm import tqdm
+
 
 BLACK = '0'
 YELLOW = '1'
@@ -17,15 +19,17 @@ def get_all_possible_words():
 
 def build_word_matches_naive():
     words = get_all_possible_words()
-    start = time.time()
+    # start = time.time()
     out = {}
     
-    for (w1 ,w2) in combinations(words, 2):
-        match = check_wordle(w1,w2)
-        if not out.get(w1): out[w1] = {}
-        out[w1][w2] = match
-    end = time.time()
-    print(end - start, len(out))
+    combos = list(combinations(words, 2))
+    with tqdm(combos, desc='Warming up', mininterval=0.3) as combos_progress:
+        for (w1 ,w2) in combos_progress:
+            match = check_wordle(w1,w2)
+            if not out.get(w1): out[w1] = {}
+            out[w1][w2] = match
+        # end = time.time()
+        # print(end - start, len(out))
     return out
 
 
@@ -129,26 +133,28 @@ def get_next_best_word_log(words, matches):
 
     return out[0:10]
 
-def get_next_best_word_log_memoed(words, matches):
+def get_next_best_word_log_memoed(words, matches, limit):
     # start = time.time()
     lengths = {}
     colours = {}
     
-    for x, y in combinations(words, 2):
-        match = get_match_for_words(x, y, matches)
-        # this only uses match so we could memoise {x[match] = list, y[match] = list}
-        length = len(get_memoed_matches_for_guesses(words, x, match, colours))
-        if not lengths.get(x): lengths[x] = []
-        if not lengths.get(y): lengths[y] = []
-        lengths[x].append(length)
-        lengths[y].append(length)
+    combos = list(combinations(words, 2))
+    with click.progressbar(combos, label=f'Getting {limit} next best guesses') as combos_progress:
+        for x, y in combos_progress:
+            match = get_match_for_words(x, y, matches)
+            # this only uses match so we could memoise {x[match] = list, y[match] = list}
+            length = len(get_memoed_matches_for_guesses(words, x, match, colours))
+            if not lengths.get(x): lengths[x] = []
+            if not lengths.get(y): lengths[y] = []
+            lengths[x].append(length)
+            lengths[y].append(length)
 
     out = [ ( x, sum(lengths[x])/len(lengths[x]))   for x in lengths]
     out.sort(reverse=True, key=lambda tup: tup[1])
     # end = time.time()
     # print('log', end - start)
 
-    return out[0:10]
+    return out[0:limit]
 
 
 def get_memoed_matches_for_guesses(words, x, match, memo):
