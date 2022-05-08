@@ -45,20 +45,20 @@ def get_match_for_words(word1, word2, matches):
 
 
 def check_wordle(word, target_word):
-    out = [0] * 5
+    out = [BLACK] * 5
     count = collections.Counter(target_word)
     
     for i in range(5):
         char = word[i]
         if char == target_word[i]:
             count[char] -= 1
-            out[i] = 2
+            out[i] = GREEN
 
     for i in range(5):
         char = word[i]
-        if out[i] == 0 and count[char] > 0 and char in target_word:
+        if out[i] == BLACK and count[char] > 0 and char in target_word:
                 count[char] -= 1
-                out[i] = 1
+                out[i] = YELLOW
     return ''.join(map(str, out))
 
 
@@ -77,20 +77,20 @@ def get_matches_for_guess(words, guess, match):
 def does_guess_match_word(word, guess, match):
     count = collections.Counter(word)
     for position, char in enumerate(match):
-        if char == '2':
+        if char == GREEN:
             if word[position] != guess[position]:
                 return False
             count[guess[position]] -= 1
             continue
         
-        elif char == '1':
+        elif char == YELLOW:
             if word[position] == guess[position] or (word[position] != guess[position] and count[guess[position]] == 0):
                 return False
 
             count[guess[position]] -= 1
             continue
             
-        if char == '0' and count[guess[position]] > 0:
+        if char == BLACK and count[guess[position]] > 0:
             return False
     return True
 
