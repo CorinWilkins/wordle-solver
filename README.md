@@ -3,7 +3,6 @@
 
 Run:
 - `poetry install` to install dependencies.
-- `poetry run generate` to build dependent hashtables, this takes several minutes.
 - `poetry run main` to start the solver, this takes 30s to warm up
 - You will then be prompeted to enter each guess followed by the colours of the letters. eg: `00112`
     - `2` for green

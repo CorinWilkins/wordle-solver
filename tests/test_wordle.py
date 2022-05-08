@@ -1,5 +1,5 @@
 from unittest import TestCase
-from wordle.wordle import check_wordle, get_matches_for_guess, get_matches_for_guesses, get_next_best_word
+from wordle.wordle import check_wordle, get_matches_for_guess, get_matches_for_guesses
 
 
 class CheckWordle(TestCase):

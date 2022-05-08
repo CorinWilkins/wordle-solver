@@ -1,97 +1,32 @@
-import multiprocessing
-import numpy as np
-import threading
 import collections
-from itertools import combinations, tee
+from itertools import combinations
 import requests
-import csv
 import time
+
+BLACK = '0'
+YELLOW = '1'
+GREEN = '2'
 
 
 def get_all_possible_words():
-    target_url = 'https://raw.githubusercontent.com/tabatkins/wordle-list/main/words'
+    target_url = 'https://raw.githubusercontent.com/3b1b/videos/master/_2022/wordle/data/possible_words.txt'
     word_list = requests.get(target_url).text.split("\n")
-    word_list.sort()
+    word_list = list(filter(None, word_list))
     return word_list
 
 
-def multiprocess_process(combos):
-    out = {}
-    for (w1 ,w2) in combos:
-        match = check_wordle(w1,w2)
-        if not out.get(w1): out[w1] = {}
-        out[w1][w2] = match
-    return out
-
-
-def threaded_process(combos, out):
-    
-    for (w1 ,w2) in combos:
-        match = check_wordle(w1,w2)
-        if not out.get(w1): out[w1] = {}
-        out[w1][w2] = match
-
-
-LIMIT = 5000
-
-
-def build_word_matches_processes(n_threads):
-    words = get_all_possible_words()[:LIMIT]
-    start = time.time()
-    out = {}
-    
-    # Splitting the items into chunks equal to number of threads
-    chunks = np.array_split(list(combinations(words, 2)), n_threads)
-    
-    with multiprocessing.Pool(processes=n_threads) as pool:
-        multiple_results = [pool.apply_async(multiprocess_process, (chunks[i],)) for i in range(n_threads)]
-        results = [res.get(timeout=100) for res in multiple_results]
-        for result in results:
-            out = {**out, **result}
-
-    end = time.time()
-    print(end - start, len(out))
-
-
 def build_word_matches_naive():
-    words = get_all_possible_words()[:LIMIT]
+    words = get_all_possible_words()
     start = time.time()
     out = {}
-    threaded_process(combinations(words, 2), out)    
+    
+    for (w1 ,w2) in combinations(words, 2):
+        match = check_wordle(w1,w2)
+        if not out.get(w1): out[w1] = {}
+        out[w1][w2] = match
     end = time.time()
     print(end - start, len(out))
-
-
-def build_word_matches_threads():
-    words = get_all_possible_words()[:LIMIT]
-    start = time.time()
-    out = {}
-
-    def threaded_process(combos):
-        for (w1 ,w2) in combos:
-            match = check_wordle(w1,w2)
-            if not out.get(w1): out[w1] = {}
-            out[w1][w2] = match
-
-    
-    
-    n_threads = 4
-    # Splitting the items into chunks equal to number of threads
-    chunks = np.array_split(list(combinations(words, 2)), n_threads)
-
-    thread_list = []
-    for thr in range(n_threads):
-        thread = threading.Thread(target=threaded_process, args=(chunks[thr],))
-        thread_list.append(thread)
-        thread_list[thr].start()
-
-    for thread in thread_list:
-        thread.join()
-
-
-        
-    end = time.time()
-    print(end - start, len(out))
+    return out
 
 
 def get_match_for_words(word1, word2, matches):
