@@ -139,10 +139,9 @@ def get_next_best_word_log_memoed(words, matches, limit):
     colours = {}
     
     combos = list(combinations(words, 2))
-    with click.progressbar(combos, label=f'Getting {limit} next best guesses') as combos_progress:
+    with tqdm(combos, desc=f'Getting {limit} next best guesses', mininterval=0.3) as combos_progress:
         for x, y in combos_progress:
             match = get_match_for_words(x, y, matches)
-            # this only uses match so we could memoise {x[match] = list, y[match] = list}
             length = len(get_memoed_matches_for_guesses(words, x, match, colours))
             if not lengths.get(x): lengths[x] = []
             if not lengths.get(y): lengths[y] = []
