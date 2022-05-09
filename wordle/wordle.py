@@ -84,7 +84,8 @@ def does_guess_match_word(word, guess, match):
             count[guess[position]] -= 1
             continue
         
-        elif char == YELLOW:
+    for position, char in enumerate(match):
+        if char == YELLOW:
             if word[position] == guess[position] or (word[position] != guess[position] and count[guess[position]] == 0):
                 return False
 
