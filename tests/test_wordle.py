@@ -40,8 +40,17 @@ class GetMatchesForGuess(TestCase):
         result = get_matches_for_guess(["aaaaz", "bbbbz", "ccccz", "ddddz", "eeeez"], "abcdz", "00002")
         self.assertEqual(result, ["eeeez"])
 
+    def test_double_exact(self):
+        result = get_matches_for_guesses(['shine'], ["belle", "00002"])
+        self.assertIn('shine', result)
+
 
 class GetMatchesForGuesses(TestCase):
     def test_exact_match(self):
         result = get_matches_for_guesses(["axxxx", "ayyyy", "xxxxx", "yyyyy", "zzzzz"], ["about", "20000", "agony", "20002"])
         self.assertEqual(result, ["ayyyy"])
+
+
+    def test_double_exact(self):
+        result = get_matches_for_guesses(get_all_possible_words(), ["belle", "00002"])
+        self.assertIn('shine', result)
