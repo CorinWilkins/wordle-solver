@@ -11,9 +11,10 @@ GREEN = '2'
 
 
 def get_all_possible_words():
-    target_url = 'https://raw.githubusercontent.com/3b1b/videos/master/_2022/wordle/data/possible_words.txt'
-    word_list = requests.get(target_url).text.split("\n")
-    word_list = list(filter(None, word_list))
+    word_list = []
+    with open('./data/words.txt') as f:
+        word_list.extend([word.strip() for word in f.readlines()])
+        
     return word_list
 
 

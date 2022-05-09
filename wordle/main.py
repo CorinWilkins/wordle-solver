@@ -26,6 +26,9 @@ def find():
             guesses.append(guess)
             while True:
                 match = click.prompt('Please enter a guess\'s matches 2=green, 1=yellow, 0=black', type=str)
+                if match == '11111':
+                    click.echo("Congratulations!")
+                    return    
                 if len(match) == 5 and not re.findall(r'([^012])', match):
                     break
                 click.echo('match must contain 5 characters and only 0s, 1s, and 2s')
