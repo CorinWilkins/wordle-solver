@@ -66,13 +66,18 @@ def present(matches, memoed_matches):
 
 
 
-            guesses.append(match)
-            matches = get_matches_for_guesses(get_all_possible_words(), guesses)
-            
-            num_possibilities = len(matches)
-            click.echo(f'{num_possibilities} possibilities')
-            if num_possibilities < 1:
-                return
-            limit = 10
-            next_best_words = get_next_best_word_log_memoed(matches, memoed_matches, limit)
-            click.echo(tabulate(next_best_words, headers=['Word', 'Mean Remaining Possiblities'], tablefmt="github"))
+class Guess:
+    word: str
+    pattern: str
+
+class WordleSolver():
+    guesses = []
+
+    def __init__(self, gateway) -> None:
+        self.all_words = self.gateway.get_all_words()
+        self.memoed_matches = build_word_matches_naive(self.all_words)
+
+
+    def __call__(self, guess:Guess) -> Any:
+        self.guesses.append(guess)
+        get_matches_for_guesses(self.all_words, self.guesses)
