@@ -18,8 +18,8 @@ def get_all_possible_words():
     return word_list
 
 
-def build_word_matches_naive():
-    words = get_all_possible_words()
+def build_word_matches_naive(words):
+    
     # start = time.time()
     out = {}
     
@@ -64,10 +64,8 @@ def check_wordle(word, target_word):
 
 
 def get_matches_for_guesses(words, guesses):
-    guesses = iter(guesses)
     for guess in guesses:
-        match = next(guesses)
-        words = [word for word in words if(does_guess_match_word(word, guess, match))]
+        words = [word for word in words if(does_guess_match_word(word, guess.word, guess.pattern))]
     return words
 
 
@@ -136,32 +134,31 @@ def get_next_best_word_log(words, matches):
     return out[0:10]
 
 def get_next_best_word_log_memoed(words, matches, limit):
-    # start = time.time()
     lengths = {}
     colours = {}
-    
+    # loops through every combination of words.
+    # word1 is the potential guess and word 2 is the potential answer.
+    # However if the opposite is true we get the same number of options so we dont need to test word2 against word1
     combos = list(combinations(words, 2))
     with tqdm(combos, desc=f'Getting {limit} next best guesses', mininterval=0.3) as combos_progress:
-        for x, y in combos_progress:
-            match = get_match_for_words(x, y, matches)
-            length = len(get_memoed_matches_for_guesses(words, x, match, colours))
-            if not lengths.get(x): lengths[x] = []
-            if not lengths.get(y): lengths[y] = []
-            lengths[x].append(length)
-            lengths[y].append(length)
+        for word1, word2 in combos_progress:
+            match = get_match_for_words(word1, word2, matches)
+            length = len(get_memoed_matches_for_guesses(words, word1, match, colours))
+            if not lengths.get(word1): lengths[word1] = []
+            if not lengths.get(word2): lengths[word2] = []
+            lengths[word1].append(length)
+            lengths[word2].append(length)
 
-    out = [ ( x, sum(lengths[x])/len(lengths[x]))   for x in lengths]
+    out = [ ( word, sum(lengths[word])/len(lengths[word]))   for word in lengths]
     out.sort(reverse=True, key=lambda tup: tup[1])
-    # end = time.time()
-    # print('log', end - start)
 
     return out[0:limit]
 
 
-def get_memoed_matches_for_guesses(words, x, match, memo):
-    if not memo.get(x): memo[x] = {}
-    if not memo[x].get(match):
-        memo[x][match] = get_matches_for_guess(words, x, match)
+def get_memoed_matches_for_guesses(words, guess, match, memo):
+    if not memo.get(guess): memo[guess] = {}
+    if not memo[guess].get(match):
+        memo[guess][match] = get_matches_for_guess(words, guess, match)
     
-    return memo[x][match]
+    return memo[guess][match]
         
