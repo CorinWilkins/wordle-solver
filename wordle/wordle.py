@@ -1,6 +1,5 @@
 import collections
 from itertools import combinations
-import requests
 import time
 from tqdm import tqdm
 
@@ -8,15 +7,6 @@ from tqdm import tqdm
 BLACK = '0'
 YELLOW = '1'
 GREEN = '2'
-
-
-def get_all_possible_words():
-    word_list = []
-    with open('./data/words.txt') as f:
-        word_list.extend([word.strip() for word in f.readlines()])
-        
-    return word_list
-
 
 def build_word_matches_naive(words):
     
